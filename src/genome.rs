@@ -6,6 +6,8 @@
  *                                               Contig
  * ***************************************************************************************************************** */
 
+use std::str::FromStr;
+
 use num_traits::Zero;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -57,22 +59,41 @@ where
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GenomeBuildIdentifier {
     major_assembly: String,
-    patch: String,
+    patch: Option<String>,
+}
+
+/// Create identifier from a string.
+/// 
+/// Infallible.
+impl FromStr for GenomeBuildIdentifier {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(GenomeBuildIdentifier {
+            major_assembly: s.to_string(),
+            patch: None,
+        })
+    }
+}
+
+impl<T> From<(T, T)> for GenomeBuildIdentifier
+where
+    T: ToString,
+{
+    fn from(value: (T, T)) -> Self {
+        GenomeBuildIdentifier {
+            major_assembly: value.0.to_string(),
+            patch: Some(value.1.to_string()),
+        }
+    }
 }
 
 impl GenomeBuildIdentifier {
-    pub fn new(major_assembly: String, patch: String) -> Self {
-        GenomeBuildIdentifier {
-            major_assembly,
-            patch,
-        }
-    }
-
     pub fn major_assembly(&self) -> &str {
         &self.major_assembly
     }
-    pub fn patch(&self) -> &str {
-        &self.patch
+    pub fn patch(&self) -> Option<&str> {
+        self.patch.as_deref()
     }
 }
 

@@ -22,7 +22,7 @@ pub fn get_grch37_p13<C>() -> GenomeBuild<C>
 where
     C: FromStr + Zero + PartialOrd,
 {
-    let id = GenomeBuildIdentifier::new("GRCh37".into(), "p13".into());
+    let id = GenomeBuildIdentifier::from(("GRCh37", "p13"));
     parse_assembly_report(id, GRCh37_p13).expect("Reading builtin GRCh37.p13 assembly report")
 }
 
@@ -31,7 +31,7 @@ pub fn get_grch38_p13<C>() -> GenomeBuild<C>
 where
     C: FromStr + Zero + PartialOrd,
 {
-    let id = GenomeBuildIdentifier::new("GRCh38".into(), "p13".into());
+    let id = GenomeBuildIdentifier::from(("GRCh38", "p13"));
     parse_assembly_report(id, GRCh38_p13).expect("Reading builtin GRCh38.p13 assembly report")
 }
 
@@ -91,15 +91,21 @@ where
         // Accessions:
         // GenBank, column #4
         if let Some(&gen_bank) = fields.get(4) {
-            alt_names.push(gen_bank);
+            if gen_bank != "na" {
+                alt_names.push(gen_bank);
+            }
         };
         // RefSeq, column #6
         if let Some(&refseq) = fields.get(6) {
-            alt_names.push(refseq);
+            if refseq != "na" {
+                alt_names.push(refseq);
+            }
         };
         // UCSC, column #9
         if let Some(&ucsc) = fields.get(9) {
-            alt_names.push(ucsc);
+            if ucsc != "na" {
+                alt_names.push(ucsc);
+            }
         };
 
         // Length
