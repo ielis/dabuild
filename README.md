@@ -1,6 +1,6 @@
 # Dabuild
 
-Access and use genome build data.
+Access genome build metadata.
 
 ## Examples
 

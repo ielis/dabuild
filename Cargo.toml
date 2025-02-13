@@ -1,7 +1,7 @@
 [package]
 name = "dabuild"
-version = "0.1.0-dev0"
-description = "Access and use genome builds."
+version = "0.1.0"
+description = "Access genome build metadata"
 keywords = ["reference", "genome", "build", "bioinformatics"]
 edition = "2021"
 
