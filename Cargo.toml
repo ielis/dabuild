@@ -13,3 +13,4 @@ license-file = "LICENSE"
 authors = ["Daniel Danis <daniel.gordon.danis@protonmail.com>"]
 
 [dependencies]
+num-traits = "0.2.19"
