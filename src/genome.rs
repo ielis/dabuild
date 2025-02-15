@@ -10,6 +10,9 @@ use std::str::FromStr;
 
 use num_traits::Zero;
 
+/// The contig data, such as identifiers and its length.
+/// 
+/// `C` is the data type to represent the number of contig's base pairs.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Contig<C> {
     name: String,
@@ -18,14 +21,19 @@ pub struct Contig<C> {
 }
 
 impl<C> Contig<C> {
+    /// Get the main name of the contig (e.g. `10`, `X`, `MT`).
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Get the alternative contig identifiers.
+    /// 
+    /// For instance, `CM000686.2`, `NC_000024.10`, and `chrY` for chromosome `Y`.
     pub fn alt_names(&self) -> impl Iterator<Item = &str> {
         self.alt_names.iter().map(AsRef::as_ref)
     }
 
+    /// Get the number of bases of the contig
     pub fn length(&self) -> &C {
         &self.length
     }
@@ -56,14 +64,16 @@ where
  *                                               Genome Build
  * ***************************************************************************************************************** */
 
+/// Includes information to identify a genome build.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GenomeBuildIdentifier {
     major_assembly: String,
     patch: Option<String>,
 }
 
-/// Create identifier from a string.
-/// 
+/// Create [`GenomeBuildIdentifier`] from a `&str`,
+/// using it as a major assembly.
+///
 /// Infallible.
 impl FromStr for GenomeBuildIdentifier {
     type Err = String;
@@ -76,6 +86,14 @@ impl FromStr for GenomeBuildIdentifier {
     }
 }
 
+/// Create [`GenomeBuildIdentifier`] from a tuple.
+///
+/// The tuple must contain two items:
+/// * major assembly
+/// * patch
+///
+/// Use [`GenomeBuildIdentifier::from_str`]
+/// to create the identifier without a patch.
 impl<T> From<(T, T)> for GenomeBuildIdentifier
 where
     T: ToString,
@@ -89,14 +107,19 @@ where
 }
 
 impl GenomeBuildIdentifier {
+    /// Get a `&str` with the major assembly identifier.
     pub fn major_assembly(&self) -> &str {
         &self.major_assembly
     }
+
+    /// Get the patch identifier
+    /// or `None` if the build identifier has no patch info.
     pub fn patch(&self) -> Option<&str> {
         self.patch.as_deref()
     }
 }
 
+/// Genome build includes the contigs and genome build metadata.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GenomeBuild<C> {
     id: GenomeBuildIdentifier,
@@ -104,17 +127,23 @@ pub struct GenomeBuild<C> {
 }
 
 impl<C> GenomeBuild<C> {
-    pub fn new(id: GenomeBuildIdentifier, mut contigs: Vec<Contig<C>>) -> Self {
+    pub fn new<I>(id: GenomeBuildIdentifier, contigs: I) -> Self
+    where
+        I: Iterator<Item = Contig<C>>,
+    {
+        let mut contigs: Vec<_> = contigs.collect();
         contigs.sort_by(|l, r| l.name().cmp(r.name()));
         GenomeBuild { id, contigs }
     }
 
+    /// Get the genome build identifiers.
     pub fn id(&self) -> &GenomeBuildIdentifier {
         &self.id
     }
 
-    pub fn contigs(&self) -> &[Contig<C>] {
-        &self.contigs
+    /// Get an iterator with all contigs.
+    pub fn contigs(&self) -> impl Iterator<Item = &Contig<C>> {
+        self.contigs.iter()
     }
 
     pub fn contig_by_name(&self, name: &str) -> Option<&Contig<C>> {

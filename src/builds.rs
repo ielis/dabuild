@@ -1,10 +1,47 @@
-//! A module with the most frequently used genome builds.
+//! Get the most commonly used genome builds.
 //!
-//! We provide these builds out-of-shelf:
-//! * GRCh37.p13
-//! * GRCh38.p13
+//! We provide several common genome build out-of-shelf.
+//! Other builds can be loaded from a genome assembly report.
 //!
-//! Other genome builds can be read with [`crate::genome::builds::parse_assembly_report`] function.
+//! ## Bundled genome builds
+//!
+//! These bundled genome builds can be loaded using the respective loader function:
+//! * *GRCh37.p13*: [`get_grch37_p13`]
+//! * *GRCh38.p13*: [`get_grch38_p13`]
+//!
+//! ### Example
+//!
+//! Load *GRCh38.p13* (*Homo sapiens*):
+//!
+//! ```rust
+//! use dabuild::{GenomeBuild, GenomeBuildIdentifier};
+//! use dabuild::builds::get_grch38_p13;
+//!
+//! let build: GenomeBuild<u32> = get_grch38_p13();
+//! ```
+//!
+//! ## Load from an assembly report
+//!
+//! A genome build can be loaded from the Genome Reference Consortium assembly report
+//! using [`parse_assembly_report`] function.
+//!
+//! For instance, *GRCm39* can be loaded from
+//! an [example assembly report](https://github.com/ielis/dabuild/blob/master/data/GCF_000001635.27_GRCm39_assembly_report.txt):
+//!
+//! ```rust
+//! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
+//! # use dabuild::builds::parse_assembly_report;
+//! use std::{fs::File, io::BufReader, str::FromStr};
+//!
+//! let path = "data/GCF_000001635.27_GRCm39_assembly_report.txt";
+//! let build: GenomeBuild<u32> = parse_assembly_report(
+//!         GenomeBuildIdentifier::from_str("GRCm39").expect("Infallible"),
+//!         BufReader::new(File::open(path).expect("File not found")),
+//! ).expect("No I/O or format issues");
+//!
+//! assert_eq!(build.id().major_assembly(), "GRCm39");
+//! ```
+//!
 
 use std::{error::Error, io::BufRead, str::FromStr};
 
@@ -18,6 +55,10 @@ const GRCh37_p13: &[u8] = include_bytes!("data/GCF_000001405.25_GRCh37.p13_assem
 const GRCh38_p13: &[u8] = include_bytes!("data/GCF_000001405.39_GRCh38.p13_assembly_report.tsv");
 
 /// Get the *GRCh37.p13* build.
+///
+/// ## Panics
+///
+/// If the builtin assembly report cannot be parsed (should not happen).
 pub fn get_grch37_p13<C>() -> GenomeBuild<C>
 where
     C: FromStr + Zero + PartialOrd,
@@ -27,6 +68,10 @@ where
 }
 
 /// Get the *GRCh38.p13* build.
+///
+/// ## Panics
+///
+/// If the builtin assembly report cannot be parsed (should not happen).
 pub fn get_grch38_p13<C>() -> GenomeBuild<C>
 where
     C: FromStr + Zero + PartialOrd,
@@ -128,5 +173,5 @@ where
         };
     }
 
-    Ok(GenomeBuild::new(id, contigs))
+    Ok(GenomeBuild::new(id, contigs.into_iter()))
 }

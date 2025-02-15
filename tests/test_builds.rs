@@ -8,7 +8,7 @@ fn grch38_p13() {
 
     assert_eq!(build.id().major_assembly(), "GRCh38");
     assert_eq!(build.id().patch(), Some("p13"));
-    assert_eq!(build.contigs().len(), 640);
+    assert_eq!(build.contigs().count(), 640);
 
     let contig = build.contig_by_name("chr1");
     assert!(contig.is_some());
@@ -36,7 +36,7 @@ fn test_parse_assembly_report() -> Result<(), Box<dyn Error>> {
 
     assert_eq!(build.id().major_assembly(), "GRCm39");
     assert_eq!(build.id().patch(), None);
-    assert_eq!(build.contigs().len(), 61);
+    assert_eq!(build.contigs().count(), 61);
 
     let contig = build.contig_by_name("Y");
     assert!(contig.is_some());
