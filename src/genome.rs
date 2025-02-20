@@ -8,10 +8,10 @@
 
 use std::str::FromStr;
 
-use num_traits::Zero;
+use num_traits::{CheckedSub, Zero};
 
 /// The contig data, such as identifiers and its length.
-/// 
+///
 /// `C` is the data type to represent the number of contig's base pairs.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Contig<C> {
@@ -27,7 +27,7 @@ impl<C> Contig<C> {
     }
 
     /// Get the alternative contig identifiers.
-    /// 
+    ///
     /// For instance, `CM000686.2`, `NC_000024.10`, and `chrY` for chromosome `Y`.
     pub fn alt_names(&self) -> impl Iterator<Item = &str> {
         self.alt_names.iter().map(AsRef::as_ref)
@@ -36,6 +36,17 @@ impl<C> Contig<C> {
     /// Get the number of bases of the contig
     pub fn length(&self) -> &C {
         &self.length
+    }
+
+    /// Transpose coordinate on a double-stranded sequence to the opposite strand.
+    ///
+    /// Returns `None` if the operation would lead to underflow.
+    pub fn transpose_coordinate(&self, other: &C) -> Option<C>
+    where
+        C: CheckedSub,
+    {
+        self.length
+            .checked_sub(other)
     }
 }
 
@@ -57,6 +68,26 @@ where
                 length,
             })
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Contig;
+
+    #[test]
+    fn test_transpose_coordinate() {
+        let contig = Contig::new("X", &["Y"], 10u8).unwrap();
+
+        assert_eq!(contig.transpose_coordinate(&10).unwrap(), 0u8);
+        assert_eq!(contig.transpose_coordinate(&8).unwrap(), 2u8);
+    }
+
+    #[test]
+    fn test_transpose_coordinate_panics() {
+        let contig = Contig::new("X", &["Y"], 10u8).unwrap();
+
+        assert!(contig.transpose_coordinate(&11).is_none())
     }
 }
 
