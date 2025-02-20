@@ -173,5 +173,5 @@ where
         };
     }
 
-    Ok(GenomeBuild::new(id, contigs.into_iter()))
+    Ok(GenomeBuild::new(id, contigs))
 }

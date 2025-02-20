@@ -160,9 +160,9 @@ pub struct GenomeBuild<C> {
 impl<C> GenomeBuild<C> {
     pub fn new<I>(id: GenomeBuildIdentifier, contigs: I) -> Self
     where
-        I: Iterator<Item = Contig<C>>,
+        I: IntoIterator<Item = Contig<C>>,
     {
-        let mut contigs: Vec<_> = contigs.collect();
+        let mut contigs: Vec<_> = contigs.into_iter().collect();
         contigs.sort_by(|l, r| l.name().cmp(r.name()));
         GenomeBuild { id, contigs }
     }
