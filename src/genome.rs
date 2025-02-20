@@ -45,8 +45,7 @@ impl<C> Contig<C> {
     where
         C: CheckedSub,
     {
-        self.length
-            .checked_sub(other)
+        self.length.checked_sub(other)
     }
 }
 
