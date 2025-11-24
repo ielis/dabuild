@@ -1,13 +1,14 @@
 //! # dabuild
 //!
-//! `dabuild` provides you with genome build metadata.
+//! `dabuild` simplifies the access to genome build metadata, including its accession, version,
+//! and contigs.
 //!
 //! ## Examples
 //!
 //! ### Load genome build
 //!
-//! The [`builds`] module provides several bundled builds.
-//! Alternatively, you can load a build from an assembly report.
+//! The [`builds`] module provides several bundled genome builds.
+//! Alternatively, you can load a genome build from a Genome Reference Consortium's (GRC) assembly report.
 //!
 //! See the [`builds`] documentation for more info.
 //!
@@ -23,7 +24,7 @@
 //! use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! use dabuild::builds::get_grch38_p13;
 //!
-//! let build: GenomeBuild<u32> = get_grch38_p13();
+//! let build: GenomeBuild = get_grch38_p13();
 //! ```
 //!
 //! ### Check build identifiers
@@ -33,8 +34,7 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
-//!
+//! # let build: GenomeBuild = get_grch38_p13();
 //! assert_eq!(build.id().major_assembly(), "GRCh38");
 //! assert_eq!(build.id().patch(), Some("p13"));
 //! ```
@@ -48,8 +48,7 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
-//!
+//! # let build: GenomeBuild = get_grch38_p13();
 //! let count = build.contigs().count();
 //! assert_eq!(count, 640);
 //! ```
@@ -59,21 +58,20 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
-//!
+//! # let build: GenomeBuild = get_grch38_p13();
 //! // Query by name ...
 //! let y = build.contig_by_name("Y");
 //! assert!(y.is_some());
 //!
-//! /// ... or GenBank accession ...
+//! // ... or by the GenBank accession ...
 //! let y = build.contig_by_name("CM000686.2");
 //! assert!(y.is_some());
 //!
-//! /// ... or RefSeq accession ...
+//! // ... or by the RefSeq accession ...
 //! let y = build.contig_by_name("NC_000024.10");
 //! assert!(y.is_some());
 //!
-//! /// ... or UCSC identifier.
+//! // ... or by the UCSC identifier.
 //! let y = build.contig_by_name("chrY");
 //! assert!(y.is_some());
 //! ```
