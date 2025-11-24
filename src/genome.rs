@@ -44,7 +44,7 @@ impl Contig {
             .map(AsRef::as_ref)
     }
 
-    /// Get the GenBank contig identifier, if it exists.
+    /// Get the GenBank contig identifier, if available.
     ///
     /// For instance, `CM000686.2` for chromosome `Y` of the *GRCh38.p13* assembly.
     ///
@@ -60,7 +60,7 @@ impl Contig {
         self.genbank_name.as_deref()
     }
 
-    /// Get the RefSeq contig identifier, if it exists.
+    /// Get the RefSeq contig identifier, if available.
     ///
     /// For instance, `NC_000024.10` for chromosome `Y` of the *GRCh38.p13* assembly.
     ///
@@ -76,7 +76,7 @@ impl Contig {
         self.refseq_name.as_deref()
     }
 
-    /// Get the UCSC contig identifier, if it exists.
+    /// Get the UCSC contig identifier, if available.
     ///
     /// For instance, `chrY` for chromosome `Y` of the *GRCh38.p13* assembly.
     ///
@@ -92,14 +92,14 @@ impl Contig {
         self.ucsc_name.as_deref()
     }
 
-    /// Get the number of bases of the contig.
+    /// Get the number of bases of the contig, a.k.a. its length.
     pub fn length(&self) -> u32 {
         self.length
     }
 
     /// Transpose coordinate on a double-stranded sequence to the opposite strand.
     ///
-    /// Returns `None` if the operation would lead to overflow.
+    /// Returns `None` if the operation would lead to an overflow.
     pub fn transpose_coordinate(&self, other: u32) -> Option<u32> {
         self.length.checked_sub(other)
     }
@@ -272,6 +272,32 @@ impl GenomeBuild {
         self.contigs.iter()
     }
 
+    /// Retrieve a [`Contig`] by its name or [`None`] if no such [`Contig`] can be found.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use dabuild::{GenomeBuild, GenomeBuildIdentifier};
+    /// use dabuild::builds::get_grch38_p13;
+    ///
+    /// let build: GenomeBuild = get_grch38_p13();
+    ///
+    /// // Query by a contig name ...
+    /// let chrY = build.contig_by_name("Y").unwrap();
+    /// assert_eq!(chrY.name(), "Y");
+    ///
+    /// // ... or by GenBank accession ...
+    /// let chrY = build.contig_by_name("CM000686.2").unwrap();
+    /// assert_eq!(chrY.genbank_name(), Some("CM000686.2"));
+    ///
+    /// // ... or by RefSeq accession ...
+    /// let chrY = build.contig_by_name("NC_000024.10").unwrap();
+    /// assert_eq!(chrY.refseq_name(), Some("NC_000024.10"));
+    ///
+    /// // ... or by UCSC accession.
+    /// let chrY = build.contig_by_name("chrY").unwrap();
+    /// assert_eq!(chrY.ucsc_name(), Some("chrY"));
+    /// ```
     pub fn contig_by_name(&self, name: &str) -> Option<&Contig> {
         self.contigs
             .iter()
