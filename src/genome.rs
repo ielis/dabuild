@@ -233,13 +233,31 @@ where
 }
 
 impl GenomeBuildIdentifier {
-    /// Get a `&str` with the major assembly identifier.
+    /// Get a [`&str`] with the major assembly identifier.
+    ///
+    /// ```
+    /// use dabuild::{GenomeBuild, GenomeBuildIdentifier};
+    /// use dabuild::builds::get_grch38_p13;
+    ///
+    /// let build: GenomeBuild = get_grch38_p13();
+    ///
+    /// assert_eq!(build.id().major_assembly(), "GRCh38");
+    /// ```
     pub fn major_assembly(&self) -> &str {
         &self.major_assembly
     }
 
     /// Get the patch identifier
-    /// or `None` if the build identifier has no patch info.
+    /// or [`None`] if the build identifier has no patch info.
+    ///
+    /// ```
+    /// use dabuild::{GenomeBuild, GenomeBuildIdentifier};
+    /// use dabuild::builds::get_grch38_p13;
+    ///
+    /// let build: GenomeBuild = get_grch38_p13();
+    ///
+    /// assert_eq!(build.id().patch(), Some("p13"));
+    /// ```
     pub fn patch(&self) -> Option<&str> {
         self.patch.as_deref()
     }
