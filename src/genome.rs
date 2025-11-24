@@ -190,7 +190,7 @@ mod contig_tests {
  *                                               Genome Build
  * ***************************************************************************************************************** */
 
-/// Includes information to identify a genome build.
+/// All information needed to identify a genome build.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GenomeBuildIdentifier {
     major_assembly: String,
@@ -245,7 +245,7 @@ impl GenomeBuildIdentifier {
     }
 }
 
-/// Genome build includes the contigs and genome build metadata.
+/// Genome build includes the contigs and the genome build metadata.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GenomeBuild {
     id: GenomeBuildIdentifier,
