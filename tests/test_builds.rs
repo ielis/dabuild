@@ -4,7 +4,7 @@ use dabuild::{builds::*, GenomeBuild, GenomeBuildIdentifier};
 
 #[test]
 fn grch38_p13() {
-    let build = get_grch38_p13::<usize>();
+    let build = get_grch38_p13();
 
     assert_eq!(build.id().major_assembly(), "GRCh38");
     assert_eq!(build.id().patch(), Some("p13"));
@@ -22,17 +22,17 @@ fn grch38_p13() {
         .iter()
         .all(|x| alt.contains(x)));
 
-    assert_eq!(contig.length(), &248_956_422usize);
+    assert_eq!(contig.length(), 248_956_422);
 }
 
 #[test]
 fn test_parse_assembly_report() -> Result<(), Box<dyn Error>> {
     let path = "data/GCF_000001635.27_GRCm39_assembly_report.txt";
     let read = BufReader::new(File::open(path)?);
-    let build = parse_assembly_report(GenomeBuildIdentifier::from_str("GRCm39").unwrap(), read);
+    let build = parse_assembly_report(GenomeBuildIdentifier::from_str("GRCm39")?, read);
 
     assert!(build.is_ok());
-    let build: GenomeBuild<u32> = build?;
+    let build: GenomeBuild = build?;
 
     assert_eq!(build.id().major_assembly(), "GRCm39");
     assert_eq!(build.id().patch(), None);
@@ -50,7 +50,7 @@ fn test_parse_assembly_report() -> Result<(), Box<dyn Error>> {
         .iter()
         .all(|x| alt.contains(x)));
 
-    assert_eq!(contig.length(), &91_455_967u32);
+    assert_eq!(contig.length(), 91_455_967);
 
     Ok(())
 }

@@ -1,6 +1,7 @@
 //! # dabuild
 //!
-//! `dabuild` provides you with genome build metadata.
+//! `dabuild` simplifies the access to genome build metadata, including its accession, version,
+//! and contigs.
 //!
 //! ## Examples
 //!
@@ -23,7 +24,7 @@
 //! use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! use dabuild::builds::get_grch38_p13;
 //!
-//! let build: GenomeBuild<u32> = get_grch38_p13();
+//! let build: GenomeBuild = get_grch38_p13();
 //! ```
 //!
 //! ### Check build identifiers
@@ -33,7 +34,7 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
+//! # let build: GenomeBuild = get_grch38_p13();
 //!
 //! assert_eq!(build.id().major_assembly(), "GRCh38");
 //! assert_eq!(build.id().patch(), Some("p13"));
@@ -48,7 +49,7 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
+//! # let build: GenomeBuild = get_grch38_p13();
 //!
 //! let count = build.contigs().count();
 //! assert_eq!(count, 640);
@@ -59,7 +60,7 @@
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
 //! # use dabuild::builds::get_grch38_p13;
-//! # let build: GenomeBuild<u32> = get_grch38_p13();
+//! # let build: GenomeBuild = get_grch38_p13();
 //!
 //! // Query by name ...
 //! let y = build.contig_by_name("Y");
