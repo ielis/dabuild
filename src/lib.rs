@@ -3,20 +3,18 @@
 //! `dabuild` simplifies the access to genome build metadata, including its accession, version,
 //! and contigs.
 //!
-//! ## Examples
+//! We list the most common use cases below.
 //!
-//! ### Load genome build
+//! ## Load genome build
 //!
 //! The [`builds`] module provides several bundled genome builds.
 //! Alternatively, you can load a genome build from a Genome Reference Consortium's (GRC) assembly report.
 //!
 //! See the [`builds`] documentation for more info.
 //!
-//! ### Use genome build
+//! ## Use genome build
 //!
 //! Genome build is basically a data container and the usage involves accessing the data.
-//!
-//! ## Examples
 //!
 //! We show several examples with the *GRCh38.p13* genome build.
 //!
@@ -27,7 +25,7 @@
 //! let build: GenomeBuild = get_grch38_p13();
 //! ```
 //!
-//! ### Check build identifiers
+//! ## Check build identifiers
 //!
 //! We can check the major assembly and the patch of the build:
 //!
@@ -39,7 +37,7 @@
 //! assert_eq!(build.id().patch(), Some("p13"));
 //! ```
 //!
-//! ### Access contigs
+//! ## Access contigs
 //!
 //! The genome build contains one or more contigs.
 //!
