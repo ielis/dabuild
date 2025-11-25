@@ -24,6 +24,44 @@ impl Contig {
         &self.name
     }
 
+    /// Get a builder to build the [`Contig`].
+    ///
+    /// # Example
+    ///
+    /// Build a contig from the minimal required attributes.
+    ///  
+    /// ```
+    /// use dabuild::Contig;
+    ///
+    /// let contig = Contig::builder().name("Y").length(57_227_415u32).build();
+    ///
+    /// assert_eq!(contig.name(), "Y");
+    /// assert_eq!(contig.length(), 57_227_415)
+    /// ```
+    ///
+    /// Build a contig with optional attributes, including GenBank, RefSeq, and UCSC accession identifiers.
+    ///
+    /// ```
+    /// use dabuild::Contig;
+    ///
+    /// let contig = Contig::builder()
+    ///             .length(57_227_415u32)
+    ///             .name("Y")
+    ///             .genbank_accession("CM000686.2")
+    ///             .refseq_accession("NC_000024.10")
+    ///             .ucsc_accession("chrY")
+    ///             .build();
+    ///
+    ///  assert_eq!(contig.name(), "Y");
+    ///  assert_eq!(contig.length(), 57_227_415);
+    ///  assert_eq!(contig.genbank_name().unwrap(), "CM000686.2");
+    ///  assert_eq!(contig.refseq_name().unwrap(), "NC_000024.10");
+    ///  assert_eq!(contig.ucsc_name().unwrap(), "chrY");
+    /// ```
+    pub fn builder() -> ContigBuilder<Uninit> {
+        ContigBuilder { state: Uninit }
+    }
+
     /// Get the alternative contig identifiers.
     ///
     /// For instance, `CM000686.2`, `NC_000024.10`, and `chrY` for chromosome `Y`.
@@ -163,6 +201,207 @@ impl Contig {
                 .filter(NON_EMPTY_NON_NA_STRING),
             length,
         })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ContigBuilder<State> {
+    state: State,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Uninit;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WithName {
+    name: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WithLength {
+    length: u32,
+}
+
+impl ContigBuilder<Uninit> {
+    /// Set the contig name (e.g. `"Y"` for chromosome Y).
+    pub fn name(self, name: impl ToString) -> ContigBuilder<WithName> {
+        ContigBuilder {
+            state: WithName {
+                name: name.to_string(),
+            },
+        }
+    }
+
+    /// Set the contig length (e.g. `57_227_415` for chromosome Y of GRCh38.p13).
+    pub fn length(self, length: impl Into<u32>) -> ContigBuilder<WithLength> {
+        ContigBuilder {
+            state: WithLength {
+                length: length.into(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WithNameAndLength {
+    name: String,
+    length: u32,
+}
+
+impl ContigBuilder<WithLength> {
+    /// Set the contig name (e.g. `"Y"` for chromosome Y).
+    pub fn name(self, name: impl ToString) -> ContigBuilder<WithNameAndLength> {
+        ContigBuilder {
+            state: WithNameAndLength {
+                name: name.to_string(),
+                length: self.state.length,
+            },
+        }
+    }
+}
+
+impl ContigBuilder<WithName> {
+    /// Set the contig length (e.g. `57_227_415` for chromosome Y of GRCh38.p13).
+    pub fn length(self, length: impl Into<u32>) -> ContigBuilder<WithNameAndLength> {
+        ContigBuilder {
+            state: WithNameAndLength {
+                name: self.state.name,
+                length: length.into(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WithNameLengthAndAltNames {
+    name: String,
+    length: u32,
+    genbank_name: Option<String>,
+    refseq_name: Option<String>,
+    ucsc_name: Option<String>,
+}
+
+/// Add optional contig attributes or finalize the build.
+impl ContigBuilder<WithNameAndLength> {
+    /// Build the complete [`Contig`].
+    pub fn build(self) -> Contig {
+        Contig {
+            name: self.state.name,
+            genbank_name: None,
+            refseq_name: None,
+            ucsc_name: None,
+            length: self.state.length,
+        }
+    }
+
+    /// Set the GenBank accession (e.g. `"CM000686.2"` for chromosome Y).
+    pub fn genbank_accession(
+        self,
+        genbank_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: Some(genbank_accession.to_string()),
+                refseq_name: None,
+                ucsc_name: None,
+            },
+        }
+    }
+
+    /// Set the RefSeq accession (e.g. `"NC_000024.10"` for chromosome Y).
+    pub fn refseq_accession(
+        self,
+        refseq_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: None,
+                refseq_name: Some(refseq_accession.to_string()),
+                ucsc_name: None,
+            },
+        }
+    }
+
+    /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
+    pub fn ucsc_accession(
+        self,
+        ucsc_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: None,
+                refseq_name: None,
+                ucsc_name: Some(ucsc_accession.to_string()),
+            },
+        }
+    }
+}
+
+/// Add optional contig attributes or finalize the build.
+impl ContigBuilder<WithNameLengthAndAltNames> {
+    /// Build the complete [`Contig`].
+    pub fn build(self) -> Contig {
+        Contig {
+            name: self.state.name,
+            length: self.state.length,
+            genbank_name: self.state.genbank_name,
+            refseq_name: self.state.refseq_name,
+            ucsc_name: self.state.ucsc_name,
+        }
+    }
+
+    /// Set the GenBank accession (e.g. `"CM000686.2"` for chromosome Y).
+    pub fn genbank_accession(
+        self,
+        genbank_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: Some(genbank_accession.to_string()),
+                refseq_name: self.state.refseq_name,
+                ucsc_name: self.state.ucsc_name,
+            },
+        }
+    }
+
+    /// Set the RefSeq accession (e.g. `"NC_000024.10"` for chromosome Y).
+    pub fn refseq_accession(
+        self,
+        refseq_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: self.state.genbank_name,
+                refseq_name: Some(refseq_accession.to_string()),
+                ucsc_name: self.state.ucsc_name,
+            },
+        }
+    }
+
+    /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
+    pub fn ucsc_accession(
+        self,
+        ucsc_accession: impl ToString,
+    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+        ContigBuilder {
+            state: WithNameLengthAndAltNames {
+                name: self.state.name,
+                length: self.state.length,
+                genbank_name: self.state.genbank_name,
+                refseq_name: self.state.refseq_name,
+                ucsc_name: Some(ucsc_accession.to_string()),
+            },
+        }
     }
 }
 
