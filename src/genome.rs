@@ -45,12 +45,12 @@ impl Contig {
     /// use dabuild::Contig;
     ///
     /// let contig = Contig::builder()
-    ///             .length(57_227_415u32)
-    ///             .name("Y")
-    ///             .genbank_accession("CM000686.2")
-    ///             .refseq_accession("NC_000024.10")
-    ///             .ucsc_accession("chrY")
-    ///             .build();
+    ///                 .length(57_227_415u32)
+    ///                 .name("Y")
+    ///                 .genbank_name("CM000686.2")
+    ///                 .refseq_name("NC_000024.10")
+    ///                 .ucsc_name("chrY")
+    ///                 .build();
     ///
     ///  assert_eq!(contig.name(), "Y");
     ///  assert_eq!(contig.length(), 57_227_415);
@@ -70,7 +70,13 @@ impl Contig {
     /// ```
     /// use dabuild::Contig;
     ///
-    /// let contig = Contig::new("Y", &["CM000686.2", "NC_000024.10", "chrY"], 57_227_415).expect("The contig data are valid");
+    /// let contig = Contig::builder()
+    ///                 .length(57_227_415u32)
+    ///                 .name("Y")
+    ///                 .genbank_name("CM000686.2")
+    ///                 .refseq_name("NC_000024.10")
+    ///                 .ucsc_name("chrY")
+    ///                 .build();
     ///
     /// let alt_names: Vec<_> = contig.alt_names().collect();
     /// assert_eq!(&alt_names, &["CM000686.2", "NC_000024.10", "chrY"]);
@@ -90,7 +96,11 @@ impl Contig {
     /// ```
     /// use dabuild::Contig;
     ///
-    /// let contig = Contig::new("Y", &["CM000686.2", "NC_000024.10", "chrY"], 57_227_415).expect("The contig data are valid");
+    /// let contig = Contig::builder()
+    ///                 .name("Y")
+    ///                 .length(57_227_415u32)
+    ///                 .genbank_name("CM000686.2")
+    ///                 .build();
     ///
     /// assert_eq!(contig.genbank_name(), Some("CM000686.2"));
     /// ```
@@ -106,7 +116,11 @@ impl Contig {
     /// ```
     /// use dabuild::Contig;
     ///
-    /// let contig = Contig::new("Y", &["CM000686.2", "NC_000024.10", "chrY"], 57_227_415).expect("The contig data are valid");
+    /// let contig = Contig::builder()
+    ///                 .name("Y")
+    ///                 .length(57_227_415u32)
+    ///                 .refseq_name("NC_000024.10")
+    ///                 .build();
     ///
     /// assert_eq!(contig.refseq_name(), Some("NC_000024.10"));
     /// ```
@@ -122,7 +136,11 @@ impl Contig {
     /// ```
     /// use dabuild::Contig;
     ///
-    /// let contig = Contig::new("Y", &["CM000686.2", "NC_000024.10", "chrY"], 57_227_415).expect("The contig data are valid");
+    /// let contig = Contig::builder()
+    ///                 .name("Y")
+    ///                 .length(57_227_415u32)
+    ///                 .ucsc_name("chrY")
+    ///                 .build();
     ///
     /// assert_eq!(contig.ucsc_name(), Some("chrY"));
     /// ```
@@ -181,7 +199,9 @@ impl Contig {
     /// * UCSC accession
     ///
     /// An accession equaling to an empty string or `"na"` is filtered out.
+    #[deprecated(since = "0.3.1", note = "use `Contig::builder()` instead")]
     pub fn new(name: impl ToString, alt_names: &[impl ToString], length: u32) -> Option<Self> {
+        // TODO: remove in `0.4.0`.
         const NON_EMPTY_NON_NA_STRING: fn(&String) -> bool = |v| !v.is_empty() && v != "na";
 
         Some(Self {
@@ -295,15 +315,15 @@ impl ContigBuilder<WithNameAndLength> {
     }
 
     /// Set the GenBank accession (e.g. `"CM000686.2"` for chromosome Y).
-    pub fn genbank_accession(
+    pub fn genbank_name(
         self,
-        genbank_accession: impl ToString,
+        genbank_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
                 length: self.state.length,
-                genbank_name: Some(genbank_accession.to_string()),
+                genbank_name: Some(genbank_name.to_string()),
                 refseq_name: None,
                 ucsc_name: None,
             },
@@ -311,25 +331,25 @@ impl ContigBuilder<WithNameAndLength> {
     }
 
     /// Set the RefSeq accession (e.g. `"NC_000024.10"` for chromosome Y).
-    pub fn refseq_accession(
+    pub fn refseq_name(
         self,
-        refseq_accession: impl ToString,
+        refseq_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
                 length: self.state.length,
                 genbank_name: None,
-                refseq_name: Some(refseq_accession.to_string()),
+                refseq_name: Some(refseq_name.to_string()),
                 ucsc_name: None,
             },
         }
     }
 
     /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
-    pub fn ucsc_accession(
+    pub fn ucsc_name(
         self,
-        ucsc_accession: impl ToString,
+        ucsc_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
@@ -337,7 +357,7 @@ impl ContigBuilder<WithNameAndLength> {
                 length: self.state.length,
                 genbank_name: None,
                 refseq_name: None,
-                ucsc_name: Some(ucsc_accession.to_string()),
+                ucsc_name: Some(ucsc_name.to_string()),
             },
         }
     }
@@ -357,15 +377,15 @@ impl ContigBuilder<WithNameLengthAndAltNames> {
     }
 
     /// Set the GenBank accession (e.g. `"CM000686.2"` for chromosome Y).
-    pub fn genbank_accession(
+    pub fn genbank_name(
         self,
-        genbank_accession: impl ToString,
+        genbank_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
                 length: self.state.length,
-                genbank_name: Some(genbank_accession.to_string()),
+                genbank_name: Some(genbank_name.to_string()),
                 refseq_name: self.state.refseq_name,
                 ucsc_name: self.state.ucsc_name,
             },
@@ -373,25 +393,25 @@ impl ContigBuilder<WithNameLengthAndAltNames> {
     }
 
     /// Set the RefSeq accession (e.g. `"NC_000024.10"` for chromosome Y).
-    pub fn refseq_accession(
+    pub fn refseq_name(
         self,
-        refseq_accession: impl ToString,
+        refseq_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
                 length: self.state.length,
                 genbank_name: self.state.genbank_name,
-                refseq_name: Some(refseq_accession.to_string()),
+                refseq_name: Some(refseq_name.to_string()),
                 ucsc_name: self.state.ucsc_name,
             },
         }
     }
 
     /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
-    pub fn ucsc_accession(
+    pub fn ucsc_name(
         self,
-        ucsc_accession: impl ToString,
+        ucsc_name: impl ToString,
     ) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
@@ -399,7 +419,7 @@ impl ContigBuilder<WithNameLengthAndAltNames> {
                 length: self.state.length,
                 genbank_name: self.state.genbank_name,
                 refseq_name: self.state.refseq_name,
-                ucsc_name: Some(ucsc_accession.to_string()),
+                ucsc_name: Some(ucsc_name.to_string()),
             },
         }
     }
@@ -411,7 +431,7 @@ mod contig_tests {
 
     #[test]
     fn test_transpose_coordinate() {
-        let contig = Contig::new("X", &["Y"], 10).unwrap();
+        let contig = Contig::builder().name("X").length(10u8).build();
 
         assert_eq!(contig.transpose_coordinate(10).unwrap(), 0);
         assert_eq!(contig.transpose_coordinate(8).unwrap(), 2);
@@ -419,7 +439,7 @@ mod contig_tests {
 
     #[test]
     fn test_transpose_coordinate_panics() {
-        let contig = Contig::new("X", &["Y"], 10).unwrap();
+        let contig = Contig::builder().name("X").length(10u8).build();
 
         assert!(contig.transpose_coordinate(11).is_none())
     }
