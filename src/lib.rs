@@ -14,7 +14,7 @@
 //!
 //! ## Use genome build
 //!
-//! Genome build is basically a data container and the usage involves accessing the data.
+//! [`GenomeBuild`] is basically a data container and the usage involves accessing the data.
 //!
 //! We show several examples with the *GRCh38.p13* genome build.
 //!
@@ -39,7 +39,7 @@
 //!
 //! ## Access contigs
 //!
-//! The genome build contains one or more contigs.
+//! The genome build contains one or more [`Contig`]s.
 //!
 //! We can iterate over all contigs, e.g. to count them:
 //!
@@ -51,7 +51,7 @@
 //! assert_eq!(count, 640);
 //! ```
 //!
-//! and we can also access a contig (e.g. `chrY`) by one of its names:
+//! and we can also access a specific [`Contig`] (e.g. for `chrY`) by one of its names:
 //!
 //! ```rust
 //! # use dabuild::{GenomeBuild, GenomeBuildIdentifier};
