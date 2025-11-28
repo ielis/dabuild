@@ -60,7 +60,8 @@ const GRCh38_p13: &[u8] = include_bytes!("data/GCF_000001405.39_GRCh38.p13_assem
 /// If the builtin assembly report cannot be parsed (should not happen).
 pub fn get_grch37_p13() -> GenomeBuild {
     let id = GenomeBuildIdentifier::from(("GRCh37", "p13"));
-    parse_assembly_report(id, GRCh37_p13).expect("The embedded assembly report for GRCh37.p13 should be valid")
+    parse_assembly_report(id, GRCh37_p13)
+        .expect("The embedded assembly report for GRCh37.p13 should be valid")
 }
 
 /// Get the *GRCh38.p13* build.
@@ -70,7 +71,8 @@ pub fn get_grch37_p13() -> GenomeBuild {
 /// If the builtin assembly report cannot be parsed (should not really happen).
 pub fn get_grch38_p13() -> GenomeBuild {
     let id = GenomeBuildIdentifier::from(("GRCh38", "p13"));
-    parse_assembly_report(id, GRCh38_p13).expect("The embedded assembly report for GRCh38.p13 should be valid")
+    parse_assembly_report(id, GRCh38_p13)
+        .expect("The embedded assembly report for GRCh38.p13 should be valid")
 }
 
 /// Parse an assembly report into a [`GenomeBuild`].

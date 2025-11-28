@@ -347,10 +347,7 @@ impl ContigBuilder<WithNameAndLength> {
     }
 
     /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
-    pub fn ucsc_name(
-        self,
-        ucsc_name: impl ToString,
-    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+    pub fn ucsc_name(self, ucsc_name: impl ToString) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
@@ -409,10 +406,7 @@ impl ContigBuilder<WithNameLengthAndAltNames> {
     }
 
     /// Set the UCSC accession (e.g. `"chrY"` for chromosome Y).
-    pub fn ucsc_name(
-        self,
-        ucsc_name: impl ToString,
-    ) -> ContigBuilder<WithNameLengthAndAltNames> {
+    pub fn ucsc_name(self, ucsc_name: impl ToString) -> ContigBuilder<WithNameLengthAndAltNames> {
         ContigBuilder {
             state: WithNameLengthAndAltNames {
                 name: self.state.name,
